@@ -1,0 +1,17 @@
+{
+  "name": "getmykidsphotos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "got": "^11.8.1",
+    "keytar": "^7.4.0",
+    "puppeteer": "^7.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Brian Donovan",
+  "license": "ISC"
+}
