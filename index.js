@@ -2,7 +2,7 @@
 
 const puppeteer = require("puppeteer");
 const keytar = require("keytar");
-const { dirname, join, extname } = require("path");
+const { basename, dirname, join, extname } = require("path");
 const { promises: fs, createWriteStream, constants } = require("fs");
 const got = require("got");
 const stream = require("stream");
@@ -53,7 +53,10 @@ const pipeline = promisify(stream.pipeline);
     );
 
     const output = join(dirname(configPath), target.output);
-    await fs.mkdir(output, { recursive: true });
+    const allPhotos = join(output, "all");
+    const batch = join(output, `batch-${new Date().toISOString()}`);
+    await fs.mkdir(batch, { recursive: true });
+    await fs.mkdir(allPhotos, { recursive: true });
 
     const cluster = clusters.find(({ name }) => name === target.clusterName);
 
@@ -124,7 +127,7 @@ const pipeline = promisify(stream.pipeline);
         const ext = extname(url) || (isVideo ? ".mp4" : ".jpg");
         const downloadPath =
           join(
-            output,
+            allPhotos,
             `${photoId}-${comment}`
               .replace(/[:\/]+/g, "-")
               .replace(/-+/g, "-")
@@ -133,6 +136,7 @@ const pipeline = promisify(stream.pipeline);
               .trim()
           ) + ext;
         if (await download(url, downloadPath)) {
+          await fs.link(downloadPath, join(batch, basename(downloadPath)));
           console.log(`Downloaded to ${downloadPath}`);
         }
         await page.keyboard.press("Escape");
